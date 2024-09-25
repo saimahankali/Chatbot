@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatGPT Web App</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 50px;
+        }
+        .chatbox {
+            border: 1px solid #ccc;
+            padding: 20px;
+            width: 50%;
+        }
+        .message {
+            margin-bottom: 10px;
+        }
+        .user-message {
+            color: blue;
+        }
+        .bot-message {
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <h1>Simple ChatGPT Web App</h1>
+    <div class="chatbox">
+        <div id="chat-log"></div>
+        <form id="chat-form">
+            <input type="text" id="message" name="message" placeholder="Type your message here..." required />
+            <button type="submit">Send</button>
+        </form>
+    </div>
+
+    <script>
+        $('#chat-form').on('submit', function(event) {
+            event.preventDefault();
+
+            var message = $('#message').val();
+            $('#chat-log').append('<div class="message user-message"><strong>You:</strong> ' + message + '</div>');
+
+            $.ajax({
+                url: '/chat',
+                type: 'POST',
+                data: { message: message },
+                success: function(response) {
+                    if (response.reply) {
+                        $('#chat-log').append('<div class="message bot-message"><strong>Bot:</strong> ' + response.reply + '</div>');
+                    } else {
+                        $('#chat-log').append('<div class="message bot-message"><strong>Bot:</strong> Error occurred.</div>');
+                    }
+                },
+                error: function() {
+                    $('#chat-log').append('<div class="message bot-message"><strong>Bot:</strong> Error occurred while contacting the API.</div>');
+                }
+            });
+
+            $('#message').val('');  // Clear input field
+        });
+    </script>
+</body>
+</html>
